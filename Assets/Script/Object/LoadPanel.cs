@@ -23,7 +23,7 @@ public class LoadPanel : MonoBehaviour
     /// <summary>
     /// dice imfo text
     /// </summary>
-    public Text m_exText = null;
+    public Text m_name = null;
 
     /// <summary>
     /// start
@@ -38,8 +38,8 @@ public class LoadPanel : MonoBehaviour
     /// </summary>
     public void ClickLoadBtn()
     {
-        m_saveLoadManager.m_groupName = m_exText.text;
-        m_saveLoadManager.DiceLoadBtn(m_index, m_type);
+        m_saveLoadManager.m_groupName = m_name.text;
+        m_saveLoadManager.DiceLoadBtn(m_index, m_type, m_name.text);
     }
 
     /// <summary>
@@ -47,7 +47,8 @@ public class LoadPanel : MonoBehaviour
     /// </summary>
     public void ClickDelBtn()
     {
-        m_saveLoadManager.m_groupName = m_exText.text;
-        m_saveLoadManager.DiceDelBtn(m_index, m_type);
+        m_saveLoadManager.m_groupName = m_name.text;
+        DiceManager.Instance.SetReAsk(m_saveLoadManager.DiceDel, m_index, m_type);
+        //m_saveLoadManager.DiceDel(m_index, m_type);
     }
 }

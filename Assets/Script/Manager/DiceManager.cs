@@ -1,5 +1,5 @@
 using System;
-using System.Collections;
+using System.IO;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -15,6 +15,20 @@ public class DiceManager : MonoBehaviour
     /// save load manager
     /// </summary>
     public SaveLoadManager m_saveLoadManager = null;
+    
+    /// <summary>
+    /// re ask
+    /// </summary>
+    public ReAskDelegate m_reAsk;
+
+    /// <summary>
+    /// re ask delegate
+    /// </summary>
+    public delegate void ReAskDelegate(int arg0, int arg1);
+
+    int m_delArg0 = 0;
+
+    int m_delArg1 = 0;
 
     [Header("Dice")]
     /// <summary>
@@ -104,6 +118,16 @@ public class DiceManager : MonoBehaviour
 
     [Header("Alert")]
     /// <summary>
+    /// re ask panel
+    /// </summary>
+    public GameObject m_reAskPanel = null;
+
+    /// <summary>
+    /// loading panel
+    /// </summary>
+    public GameObject m_loadingPanel = null;
+
+    /// <summary>
     /// alert panel
     /// </summary>
     public GameObject m_alertPanel = null;
@@ -119,23 +143,24 @@ public class DiceManager : MonoBehaviour
         g_diceManager = this;
     }
 
-    /// <summary>
-    /// roll the dice
-    /// </summary>
-    public void RollDice()
+    private void Update()
     {
-        m_nowLogObj = Instantiate(m_logObj);
-        m_nowLogObj.transform.SetParent(m_logContent.transform);
-        m_nowLogObj.transform.localScale = new Vector3(1, 1, 1);
-        m_nowLogObj.text = DateTime.Now.ToString() + "\n";
-
-        RollNumDice();
-        RollStrDice();
-
-        if (m_logContent.transform.childCount > 200)
+        if (Input.GetKeyDown(KeyCode.Escape))
         {
-            Destroy(m_logContent.transform.GetChild(0).gameObject);
+            SetReAsk(QuitApp, 0, 0);
         }
+    }
+
+    /// <summary>
+    /// quit application
+    /// </summary>
+    /// <param name="arg0">none</param>
+    /// <param name="arg1">none</param>
+    void QuitApp(int arg0, int arg1)
+    {
+        Debug.Log("in");
+
+        Application.Quit();
     }
 
     /// <summary>
@@ -294,6 +319,25 @@ public class DiceManager : MonoBehaviour
     }
 
     /// <summary>
+    /// roll the dice
+    /// </summary>
+    public void RollDice()
+    {
+        m_nowLogObj = Instantiate(m_logObj);
+        m_nowLogObj.transform.SetParent(m_logContent.transform);
+        m_nowLogObj.transform.localScale = new Vector3(1, 1, 1);
+        m_nowLogObj.text = DateTime.Now.ToString() + "\n";
+
+        RollNumDice();
+        RollStrDice();
+
+        if (m_logContent.transform.childCount > 200)
+        {
+            Destroy(m_logContent.transform.GetChild(0).gameObject);
+        }
+    }
+
+    /// <summary>
     /// add dice
     /// </summary>
     /// <param name="argDiceAmount">dice amount to make</param>
@@ -346,8 +390,6 @@ public class DiceManager : MonoBehaviour
     /// <param name="argDice">dice main imfo</param>
     public void RemakeDice(int argDiceNum, string argName, int argType, int argNumChange, string[] argDice)
     {
-        
-
         if (argType == 0 || argType == 1)
         {
             DiceGroup _diceGroup = m_numDiceGroupList[argDiceNum];
@@ -393,6 +435,14 @@ public class DiceManager : MonoBehaviour
     }
 
     /// <summary>
+    /// setting operator type
+    /// </summary>
+    public void ChangeOperatorType(int argDiceGroupIndex, int argOpeType)
+    {
+        m_numDiceGroupList[argDiceGroupIndex].m_operator.ChangeOpeType(argDiceGroupIndex);
+    }
+
+    /// <summary>
     /// delete dice
     /// </summary>
     /// <param name="diceNum">dice num</param>
@@ -429,6 +479,17 @@ public class DiceManager : MonoBehaviour
             return;
         }
 
+        string[] files = Directory.GetFiles(
+            Application.persistentDataPath + "/" + m_saveLoadManager.m_groupSaveFileName);
+        foreach(string file in files)
+        {
+            if (Path.GetFileName(file) == m_groupNameInputField.text + ".json")
+            {
+                Alert("A group with the same name already exists");
+                return;
+            }
+        }
+
         DiceGroupSaveData _save = new DiceGroupSaveData();
         _save.m_diceGroupName = m_groupNameInputField.text;
 
@@ -447,6 +508,40 @@ public class DiceManager : MonoBehaviour
 
         m_saveLoadManager.SaveGroupData(_save);
         m_GroupNamePanel.SetActive(false);
+    }
+
+    public void SetReAsk(ReAskDelegate argDel ,int arg0, int arg1)
+    {
+        m_reAsk = argDel;
+        m_delArg0 = arg0;
+        m_delArg1 = arg1;
+
+        m_reAskPanel.SetActive(true);
+    }
+
+    /// <summary>
+    /// click re ask ok button
+    /// </summary>
+    public void ClickReAsk(bool argAnswer)
+    {
+        if (argAnswer)
+        {
+            m_reAsk(m_delArg0, m_delArg1);
+        }
+
+        m_reAsk = null;
+        m_reAskPanel.SetActive(false);
+        m_delArg0 = 0;
+        m_delArg1 = 0;
+    }
+
+    /// <summary>
+    /// show loading panel
+    /// </summary>
+    /// <param name="argState">set state as bool</param>
+    public void SetLoadingPanel(bool argState)
+    {
+        m_loadingPanel.SetActive(argState);
     }
 
     /// <summary>

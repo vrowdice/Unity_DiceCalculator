@@ -322,8 +322,32 @@ public class DiceImfoManager : MonoBehaviour
         _dice.m_type = m_diceTypeDropDown.value;
         _dice.m_diceImfo = m_sampledice;
 
-        if(m_diceTypeDropDown.value == 1 || m_diceTypeDropDown.value == 0) m_saveLoadManager.m_saveNumDiceList.Add(_dice);
-        else m_saveLoadManager.m_saveStrDiceList.Add(_dice);
+        if (m_diceTypeDropDown.value == 1 || m_diceTypeDropDown.value == 0)
+        {
+            for (int i = 0; i < m_saveLoadManager.m_saveNumDiceList.Count; i++)
+            {
+                if(m_saveLoadManager.m_saveNumDiceList[i].m_name == m_diceNameInputField.text)
+                {
+                    DiceManager.Instance.Alert("A dice with the same name already exists");
+                    return;
+                }
+            }
+
+            m_saveLoadManager.m_saveNumDiceList.Add(_dice);
+        }
+        else
+        {
+            for (int i = 0; i < m_saveLoadManager.m_saveStrDiceList.Count; i++)
+            {
+                if (m_saveLoadManager.m_saveStrDiceList[i].m_name == m_diceNameInputField.text)
+                {
+                    DiceManager.Instance.Alert("A dice with the same name already exists");
+                    return;
+                }
+            }
+
+            m_saveLoadManager.m_saveStrDiceList.Add(_dice);
+        }
         m_saveLoadManager.SaveData();
 
         DiceManager.Instance.Alert("Save Complete");

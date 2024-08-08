@@ -67,11 +67,6 @@ public class SaveLoadManager : MonoBehaviour
     public GameObject m_strPanelContent = null;
 
     /// <summary>
-    /// re ask panel
-    /// </summary>
-    public GameObject m_reAskPanel = null;
-
-    /// <summary>
     /// load panel list
     /// </summary>
     public List<LoadPanel> m_numLoadPanelList = new List<LoadPanel>();
@@ -89,16 +84,6 @@ public class SaveLoadManager : MonoBehaviour
     int m_panelType = 0;
 
     /// <summary>
-    /// index to del
-    /// </summary>
-    int m_panelIndex = 0;
-
-    /// <summary>
-    /// type for index to del
-    /// </summary>
-    int m_delDiceType = 0;
-
-    /// <summary>
     /// start
     /// </summary>
     private void Start()
@@ -107,8 +92,6 @@ public class SaveLoadManager : MonoBehaviour
             !Directory.Exists(Application.persistentDataPath + "/" + m_groupSaveFileName)) ResetSave();
 
         m_panelType = -1;
-        m_panelIndex = -1;
-        m_delDiceType = -1;
     }
 
     /// <summary>
@@ -214,7 +197,10 @@ public class SaveLoadManager : MonoBehaviour
     public DiceGroupSaveData LoadGroupData(string argName)
     {
         DiceGroupSaveData _save = new DiceGroupSaveData(Load(m_groupSaveFileName + "/" + argName));
-        if (_save == null) return null;
+        if (_save == null)
+        {
+            return null;
+        }
 
         return _save;
     }
@@ -266,7 +252,7 @@ public class SaveLoadManager : MonoBehaviour
 
             _panel.m_index = i;
             _panel.m_type = 1;
-            _panel.m_exText.text = m_saveNumDiceList[i].m_name;
+            _panel.m_name.text = m_saveNumDiceList[i].m_name;
 
             m_numLoadPanelList.Add(_panel);
         }
@@ -278,7 +264,7 @@ public class SaveLoadManager : MonoBehaviour
 
             _panel.m_index = i;
             _panel.m_type = 2;
-            _panel.m_exText.text = m_saveStrDiceList[i].m_name;
+            _panel.m_name.text = m_saveStrDiceList[i].m_name;
 
             m_strLoadPanelList.Add(_panel);
         }
@@ -295,40 +281,9 @@ public class SaveLoadManager : MonoBehaviour
         m_loadPanel.SetActive(true);
     }
 
-    /// <summary>
-    /// setting dice group load panel
-    /// </summary>
     public void SetDiceGroupLoadPanel()
     {
-        string[] _str = LoadAllGroupsNameData();
-        if (_str.Length <= 0) return;
-
-        m_type0Group.SetActive(false);
-        m_panelType = 1;
-        ResetLoadPanel();
-
-        for (int i = 0; i < _str.Length; i++)
-        {
-            LoadPanel _panel = Instantiate(m_loadDicePanel).GetComponent<LoadPanel>();
-            _panel.gameObject.transform.SetParent(m_numPanelContent.transform);
-            _panel.gameObject.transform.localScale = new Vector3(1, 1, 1);
-
-            _panel.m_exText.text = _str[i];
-            _panel.m_index = i;
-
-            m_numLoadPanelList.Add(_panel);
-        }
-
-        if (m_nowSortType == 0)
-        {
-            SortType0();
-        }
-        else if(m_nowSortType == 1)
-        {
-            SortType1();
-        }
-
-        m_loadPanel.SetActive(true);
+        StartCoroutine(IESetDiceGroupLoadPanel());
     }
 
     /// <summary>
@@ -338,10 +293,10 @@ public class SaveLoadManager : MonoBehaviour
     public void SortType0()
     {
         m_numLoadPanelList.Sort((a, b) => {
-            return a.m_exText.text.CompareTo(b.m_exText.text);
+            return a.m_name.text.CompareTo(b.m_name.text);
         });
         m_strLoadPanelList.Sort((a, b) => {
-            return a.m_exText.text.CompareTo(b.m_exText.text);
+            return a.m_name.text.CompareTo(b.m_name.text);
         });
 
         for (int i = 0; i < m_numLoadPanelList.Count; i++)
@@ -361,10 +316,10 @@ public class SaveLoadManager : MonoBehaviour
     public void SortType1()
     {
         m_numLoadPanelList.Sort((a, b) => {
-            return a.m_exText.text.CompareTo(b.m_exText.text);
+            return a.m_name.text.CompareTo(b.m_name.text);
         });
         m_strLoadPanelList.Sort((a, b) => {
-            return a.m_exText.text.CompareTo(b.m_exText.text);
+            return a.m_name.text.CompareTo(b.m_name.text);
         });
 
         for (int i = 0; i < m_numLoadPanelList.Count; i++)
@@ -381,7 +336,7 @@ public class SaveLoadManager : MonoBehaviour
     /// click dice load btn
     /// </summary>
     /// <param name="argIndex"></param>
-    public void DiceLoadBtn(int argIndex, int argType)
+    public void DiceLoadBtn(int argIndex, int argType, string argName)
     {
         if(m_panelType == 0)
         {
@@ -408,54 +363,26 @@ public class SaveLoadManager : MonoBehaviour
         }
         else if(m_panelType == 1)
         {
-            DiceManager _diceManager = DiceManager.Instance;
+            StartCoroutine(GetDiceGroup(argName));
         }
-
     }
 
     /// <summary>
     /// click dice del btn
     /// </summary>
     /// <param name="argIndex"></param>
-    public void DiceDelBtn(int argIndex, int argType)
+    public void DiceDel(int argIndex, int argType)
     {
         if (m_panelType == 0)
         {
-            m_panelType = 0;
-            m_panelIndex = argIndex;
-            m_delDiceType = argType;
-        }
-        else if (m_panelType == 1)
-        {
-            m_panelType = 1;
-            m_panelIndex = argIndex;
-            m_delDiceType = argType;
-        }
-
-        m_reAskPanel.SetActive(true);
-    }
-
-    /// <summary>
-    /// del or not user response
-    /// </summary>
-    /// <param name="argResponse">true ok false no</param>
-    public void ReAsk(bool argResponse)
-    {
-        if (!argResponse)
-        {
-            m_reAskPanel.SetActive(false);
-        }
-
-        if(m_panelType == 0)
-        {
-            if (m_delDiceType == 1)
+            if (argType == 1)
             {
-                m_saveNumDiceList.RemoveAt(m_panelIndex);
+                m_saveNumDiceList.RemoveAt(argIndex);
                 SaveData();
             }
             else
             {
-                m_saveStrDiceList.RemoveAt(m_panelIndex);
+                m_saveStrDiceList.RemoveAt(argIndex);
                 SaveData();
             }
 
@@ -463,18 +390,22 @@ public class SaveLoadManager : MonoBehaviour
         }
         else if (m_panelType == 1)
         {
-            if(m_groupName.Length <= 0)
+            if (m_groupName.Length <= 0)
             {
                 ResetLoadPanelImfo();
                 return;
             }
 
             File.Delete(Application.persistentDataPath + "/" + m_groupSaveFileName + "/" + m_groupName + ".json");
-            m_saveNumDiceList.RemoveAt(m_panelIndex);
+            for (int i = 0; i < m_numPanelContent.transform.childCount; i++)
+            {
+                if (m_numPanelContent.transform.GetChild(i).GetComponent<LoadPanel>().m_index == argIndex)
+                {
+                    Destroy(m_numPanelContent.transform.GetChild(i).gameObject);
+                }
+            }
             SetDiceGroupLoadPanel();
         }
-
-        m_reAskPanel.SetActive(false);
     }
 
     /// <summary>
@@ -483,11 +414,7 @@ public class SaveLoadManager : MonoBehaviour
     void ResetLoadPanelImfo()
     {
         m_panelType = -1;
-        m_panelIndex = -1;
-        m_delDiceType = -1;
         m_groupName = string.Empty;
-
-        m_reAskPanel.SetActive(false);
     }
 
     /// <summary>
@@ -504,6 +431,78 @@ public class SaveLoadManager : MonoBehaviour
         {
             Destroy(m_strPanelContent.transform.GetChild(i).gameObject);
             m_strLoadPanelList = new List<LoadPanel>();
+        }
+    }
+
+    /// <summary>
+    /// setting dice group load panel
+    /// </summary>
+    IEnumerator IESetDiceGroupLoadPanel()
+    {
+        string[] _str = LoadAllGroupsNameData();
+
+        DiceManager.Instance.SetLoadingPanel(true);
+        yield return new WaitForSeconds(1.0f);
+        DiceManager.Instance.SetLoadingPanel(false);
+
+        if (_str.Length <= 0)
+        {
+            DiceManager.Instance.Alert("No records saved");
+            m_loadPanel.SetActive(false);
+
+            yield break;
+        }
+
+        m_type0Group.SetActive(false);
+        m_panelType = 1;
+        ResetLoadPanel();
+
+        for (int i = 0; i < _str.Length; i++)
+        {
+            LoadPanel _panel = Instantiate(m_loadDicePanel).GetComponent<LoadPanel>();
+            _panel.gameObject.transform.SetParent(m_numPanelContent.transform);
+            _panel.gameObject.transform.localScale = new Vector3(1, 1, 1);
+
+            _panel.m_index = i;
+            _panel.m_type = 0;
+            _panel.m_name.text = _str[i];
+
+            m_numLoadPanelList.Add(_panel);
+        }
+
+        if (m_nowSortType == 0)
+        {
+            SortType0();
+        }
+        else if (m_nowSortType == 1)
+        {
+            SortType1();
+        }
+
+        m_loadPanel.SetActive(true);
+    }
+
+    IEnumerator GetDiceGroup(string argName)
+    {
+        DiceGroupSaveData _data = LoadGroupData(argName);
+
+        DiceManager.Instance.SetLoadingPanel(true);
+        yield return new WaitForSeconds(1.0f);
+        DiceManager.Instance.SetLoadingPanel(false);
+
+        for (int i = 0; i < _data.m_numDiceName.Count; i++)
+        {
+            DiceManager.Instance.AddDice(1, _data.m_numDiceName[i], 1, _data.m_numDiceImfo[i]);
+        }
+
+        for (int i = 0; i < _data.m_strDiceName.Count; i++)
+        {
+            DiceManager.Instance.AddDice(1, _data.m_strDiceName[i], 2, _data.m_strDiceImfo[i]);
+        }
+
+        for (int i = 0; i < _data.m_operatorType.Count; i++)
+        {
+            DiceManager.Instance.ChangeOperatorType(i, _data.m_operatorType[i]);
         }
     }
 }

@@ -18,8 +18,9 @@ public class Operator : MonoBehaviour
     /// <summary>
     /// if change operator type
     /// </summary>
-    public void ChangeOpeType()
+    public void ChangeOpeType(int argOpeType)
     {
-        m_operatorType = m_dropdown.value;
+        m_operatorType = argOpeType;
+        m_dropdown.value = argOpeType;
     }
 }
