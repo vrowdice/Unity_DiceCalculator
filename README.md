@@ -1,30 +1,37 @@
-Dice Calculator App
-Overview
-This Unity-based app allows users to create and calculate results for multiple dice (integer and string inputs).
+# Dice Calculator App
 
-Features
-Custom Dice Creation: Users can design and input custom dice configurations.
-Result Calculation: The app computes and displays outcomes based on user-defined dice inputs.
-User-Friendly Interface: Intuitive design for easy navigation and usage.
+## Overview
+This Unity-based application enables users to create custom dice configurations and calculate their results. It supports both integer and string-based inputs for flexible usage.
 
-How to Use
-Input Dice Configuration: Enter your desired dice types and configurations.
-Calculate Results: Click on the calculate button to see the computed outcomes.
-View Results: Results are displayed in a clear format for easy interpretation.
+## Features
+- **Custom Dice Creation**: Design and input various types of dice with personalized values.
+- **Result Calculation**: Instantly compute and display results based on the entered dice setup.
+- **User-Friendly Interface**: Clean and intuitive UI for smooth interaction.
 
-Feedback
-We welcome your feedback and suggestions for improvements. Please contact us with any comments or issues.
+## How to Use
+1. **Enter Dice Configuration**: Specify the types and values for each dice you want to include.
+2. **Calculate Results**: Press the "Calculate" button to process the input.
+3. **View Results**: See the results displayed in an easy-to-read format.
 
-주사위 계산기 앱
-개요
-이 Unity 기반 앱은 사용자가 여러 주사위(정수 및 문자열 입력)를 제작하고 계산 결과를 확인할 수 있게 합니다.
+## Feedback
+We’d love to hear your thoughts!  
+Feel free to reach out with any suggestions, bug reports, or improvement ideas.
 
-기능
-사용자 주사위 제작: 사용자는 주사위의 유형과 구성을 자유롭게 입력할 수 있습니다.
-결과 계산: 앱은 사용자가 정의한 주사위 입력에 따라 결과를 계산하고 표시합니다.
-사용자 친화적 인터페이스: 직관적인 디자인으로 쉬운 사용이 가능합니다.
+# 주사위 계산기 앱
 
-사용 방법
-주사위 구성 입력: 원하는 주사위 유형과 구성을 입력합니다.
-결과 계산: 계산 버튼을 클릭하여 계산된 결과를 확인합니다.
-결과 보기: 결과는 명확한 형식으로 표시되어 해석하기 쉽습니다.
+## 개요
+이 Unity 기반 애플리케이션은 사용자가 다양한 주사위를 직접 구성하고, 그 결과를 계산할 수 있도록 도와줍니다. 정수와 문자열 입력을 모두 지원하여 유연하게 사용할 수 있습니다.
+
+## 주요 기능
+- **사용자 정의 주사위 제작**: 원하는 값과 유형으로 주사위를 자유롭게 설정할 수 있습니다.
+- **결과 계산 기능**: 입력된 주사위 구성을 바탕으로 즉시 결과를 계산하여 보여줍니다.
+- **직관적인 인터페이스**: 누구나 쉽게 사용할 수 있도록 깔끔하고 간단한 UI를 제공합니다.
+
+## 사용 방법
+1. **주사위 구성 입력**: 사용할 주사위의 종류와 값을 입력합니다.
+2. **결과 계산**: ‘계산’ 버튼을 눌러 결과를 확인합니다.
+3. **결과 확인**: 계산된 결과가 보기 쉬운 형식으로 화면에 표시됩니다.
+
+## 피드백
+더 나은 앱을 위해 여러분의 의견을 기다리고 있습니다.  
+불편한 점이나 제안이 있다면 언제든지 연락해주세요.
